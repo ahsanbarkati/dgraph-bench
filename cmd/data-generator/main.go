@@ -15,9 +15,10 @@ import (
 )
 
 const (
-	maxUid           = 2 * 1e9
+	maxUid           = 2 * (1<<30)
+	offset           = 3 * (1<<30)
 	maxDirectFriends = 300
-	chunkSize        = int(maxUid / 50)
+	chunkSize        = 1<<20
 	k                = 100
 )
 
@@ -43,8 +44,8 @@ func main() {
 	go worker(w, ch, &wg)
 
 	for i := 1; i <= maxUid; i++ {
-		meID := fmt.Sprintf("_:m.%d", i)
-		buf.WriteString(getNQuad(meID, "xid", fmt.Sprintf("\"%d\"", i)))
+		meID := fmt.Sprintf("_:n.%d", i)
+		buf.WriteString(getNQuad(meID, "xid", fmt.Sprintf("\"%d\"", i+offset)))
 		buf.WriteString(getNQuad(meID, "name", fmt.Sprintf("\"%s\"", tasks.RandString(10, r))))
 		buf.WriteString(getNQuad(meID, "age", fmt.Sprintf("\"%d\"", 18+rand.Intn(80))))
 		buf.WriteString(getNQuad(meID, "created_at", fmt.Sprintf("\"%d\"", time.Now().UnixNano())))
@@ -56,7 +57,7 @@ func main() {
 			for fID == i {
 				fID = rand.Intn(maxUid)
 			}
-			buf.WriteString(getNQuad(meID, "friend_of", fmt.Sprintf("<_:m.%d>", fID)))
+			buf.WriteString(getNQuad(meID, "friend_of", fmt.Sprintf("<_:n.%d>", fID)))
 		}
 
 		if i%chunkSize == 0 {
