@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	maxUid           = 1e6
+	maxUid           = 2 * 1e9
 	maxDirectFriends = 300
 	chunkSize        = int(maxUid / 50)
 	k                = 100
