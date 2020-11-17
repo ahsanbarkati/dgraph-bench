@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	maxUid           = 2 * 1e9
-	maxDirectFriends = 300
+	maxUid           = 1e6
+	maxDirectFriends = 100
 	chunkSize        = int(maxUid / 50)
 	k                = 100
 )
@@ -45,7 +45,7 @@ func main() {
 	for i := 1; i <= maxUid; i++ {
 		meID := fmt.Sprintf("_:m.%d", i)
 		buf.WriteString(getNQuad(meID, "xid", fmt.Sprintf("\"%d\"", i)))
-		buf.WriteString(getNQuad(meID, "name", fmt.Sprintf("\"%s\"", tasks.RandString(10, r))))
+		buf.WriteString(getNQuad(meID, "name", fmt.Sprintf("\"%s\"", tasks.RandString(1<<10, r))))
 		buf.WriteString(getNQuad(meID, "age", fmt.Sprintf("\"%d\"", 18+rand.Intn(80))))
 		buf.WriteString(getNQuad(meID, "created_at", fmt.Sprintf("\"%d\"", time.Now().UnixNano())))
 		buf.WriteString(getNQuad(meID, "updated_at", fmt.Sprintf("\"%d\"", time.Now().UnixNano())))
@@ -53,10 +53,26 @@ func main() {
 		friendCnt := randomNum()
 		for j := 1; j <= friendCnt; j++ {
 			fID := rand.Intn(maxUid)
+			rID1 := rand.Intn(maxUid)
+			rID2 := rand.Intn(maxUid)
+			rID3 := rand.Intn(maxUid)
 			for fID == i {
 				fID = rand.Intn(maxUid)
 			}
+			for rID1 == i {
+				rID1 = rand.Intn(maxUid)
+			}
+			for rID2 == i {
+				rID2 = rand.Intn(maxUid)
+			}
+			for rID3 == i {
+				rID3 = rand.Intn(maxUid)
+			}
+
 			buf.WriteString(getNQuad(meID, "friend_of", fmt.Sprintf("<_:m.%d>", fID)))
+			buf.WriteString(getNQuad(meID, "rel_1", fmt.Sprintf("<_:m.%d>", rID1)))
+			buf.WriteString(getNQuad(meID, "rel_2", fmt.Sprintf("<_:m.%d>", rID2)))
+			buf.WriteString(getNQuad(meID, "rel_3", fmt.Sprintf("<_:m.%d>", rID3)))
 		}
 
 		if i%chunkSize == 0 {
